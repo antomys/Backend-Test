@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "Sqlite": "Data source=sqlite.db"
+  }
+}

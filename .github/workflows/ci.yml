@@ -1,0 +1,100 @@
+name: .NET Core CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  MSSQL_SA_PASSWORD: "My_strong_Pass123!"   # matches test.appsettings.json
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────
+  # 1. BUILD
+  # ─────────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.sln', '**/*.csproj', '**/*.props', '**/*.targets') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            **/bin/Release
+            **/obj/Release
+
+  # ─────────────────────────────────────────────────────────────────
+  # 2. INTEGRATION TESTS  (SQL Server via docker compose)
+  # ─────────────────────────────────────────────────────────────────
+  integration-tests:
+    name: Integration Tests
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.sln', '**/*.csproj', '**/*.props', '**/*.targets') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Download build output
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .
+
+      - name: Run Integration Tests
+        run: |
+          dotnet test test/BackendTest.Integration.Tests/BackendTest.Integration.Tests.csproj \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=integration-tests.trx" \
+            --results-directory ./test-results
+
+      - name: Stop docker compose services
+        if: always()
+        run: docker compose down --volumes
+
+      - name: Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: ./test-results/integration-tests.trx

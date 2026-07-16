@@ -1,0 +1,18 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "BackendTest": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "scalar",
+      "applicationUrl": "http://localhost:5151",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+				"API_VERSION": "2.3",
+				"UI_VERSION": "4.7",
+				"ConnectionStrings__Sqlite": "Data Source=database.db"
+      }
+    }
+  }
+}

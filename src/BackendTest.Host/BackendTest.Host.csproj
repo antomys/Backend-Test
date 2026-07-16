@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.18.1" />
+    <PackageReference Include="Microsoft.Extensions.Telemetry" Version="9.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Telemetry.Abstractions" Version="9.7.0" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.16.3" />
+    <PackageReference Include="Scalar.AspNetCore.Microsoft" Version="2.16.3" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.6"/>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="10.0.0" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.0.0" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="Sylvan.Data" Version="0.2.17" />
+    <PackageReference Include="Sylvan.Data.Csv" Version="1.4.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BackendTest.Application\BackendTest.Application.csproj" />
+    <ProjectReference Include="..\BackendTest.Infrastructure\BackendTest.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
